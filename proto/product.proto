@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package product;
+
+option go_package = "productpb/";
+
+import "proto/google/api/annotations.proto";
+
+message Product {
+  string name = 2;
+  bool active = 4;
+  float price = 5;
+  int32 max_order = 6;
+}
+
+message CreateProductRequest {
+  Product product = 1;
+}
+
+message CreateProductResponse {
+  string productId = 1;
+}
+
+message CreateProductsRequest {
+  repeated Product products = 1;
+}
+
+message CreateProductsResponse {
+  repeated string productIds = 1;
+}
+
+service ProductService {
+  rpc CreateProduct(CreateProductRequest) returns(CreateProductResponse) {
+    option (google.api.http) = {
+      post: "/product"
+      body: "*"
+    };
+  };
+  rpc CreateProductsClientStream(stream CreateProductRequest) returns(CreateProductsResponse) {};
+  rpc CreateProductsServerStream(CreateProductsRequest) returns(stream CreateProductResponse) {
+    option (google.api.http) = {
+      post: "/products"
+      body: "*"
+    };
+  };
+  rpc CreateProductsBiDi(stream CreateProductRequest) returns(stream CreateProductResponse) {};
+}
+
