@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"gRPCDemo/gen/productpb"
 	petname "github.com/dustinkirkland/golang-petname"
@@ -17,9 +18,11 @@ func init() {
 }
 
 func main() {
+	targetServer := flag.String("target-server", "", "server")
+	flag.Parse()
 
 	fmt.Println("Starting the Catalog Client")
-	conn, err := grpc.Dial("localhost:8080", grpc.WithInsecure())
+	conn, err := grpc.Dial(*targetServer, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("error creating connection:%+v", err)
 	}
