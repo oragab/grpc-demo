@@ -22,7 +22,11 @@ func main() {
 	flag.Parse()
 
 	fmt.Println("Starting the Catalog Client")
-	conn, err := grpc.Dial(*targetServer, grpc.WithInsecure())
+	conn, err := grpc.Dial(*targetServer,
+		grpc.WithInsecure(),
+		grpc.WithUnaryInterceptor(Unary()),
+		grpc.WithStreamInterceptor(StreamInterceptor()),
+	)
 	if err != nil {
 		log.Fatalf("error creating connection:%+v", err)
 	}
@@ -42,6 +46,36 @@ func main() {
 
 	// bidi
 	createProductsBiDi(client)
+}
+
+func Unary() grpc.UnaryClientInterceptor {
+	return func(
+		ctx context.Context,
+		method string,
+		req, reply interface{},
+		cc *grpc.ClientConn,
+		invoker grpc.UnaryInvoker,
+		opts ...grpc.CallOption,
+	) error {
+		log.Printf("--> unary interceptor: %s", method)
+
+		return invoker(ctx, method, req, reply, cc, opts...)
+	}
+}
+
+func StreamInterceptor() grpc.StreamClientInterceptor {
+	return func(
+		ctx context.Context,
+		desc *grpc.StreamDesc,
+		cc *grpc.ClientConn,
+		method string,
+		streamer grpc.Streamer,
+		opts ...grpc.CallOption,
+	) (grpc.ClientStream, error) {
+		log.Printf("--> stream interceptor: %s", method)
+
+		return streamer(ctx, desc, cc, method, opts...)
+	}
 }
 
 func createProduct(client productpb.ProductServiceClient) {

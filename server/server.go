@@ -29,7 +29,7 @@ func main() {
 func initServer() {
 	fmt.Println("Starting The Server")
 	grpcServerAddress := flag.String("grpc-address", "", "grpc server address")
-	restServerAddress := flag.String("rest-address", "", "rest server address")
+	//restServerAddress := flag.String("rest-address", "", "rest server address")
 	flag.Parse()
 	//grpcEndPoint := "0.0.0.0:8080"
 	//fmt.Printf("grpc address %s\n", *grpcServerAddress)
@@ -39,16 +39,16 @@ func initServer() {
 		log.Fatalf("failed To create grpc listener: %+v", err)
 	}
 
-	restListener, err := net.Listen("tcp", *restServerAddress)
-	if err != nil {
-		log.Fatalf("failed To create rest listener: %+v", err)
-	}
+	//restListener, err := net.Listen("tcp", *restServerAddress)
+	//if err != nil {
+	//	log.Fatalf("failed To create rest listener: %+v", err)
+	//}
 
 	productService := &catalogservice.ProductService{}
 
 	go initGRPCServer(gRPCListener, productService)
-	go initRestServer(gRPCListener, productService)
-	go initRestStreamingServer(restListener, *grpcServerAddress)
+	//go initRestServer(gRPCListener, productService)
+	//go initRestStreamingServer(restListener, *grpcServerAddress)
 }
 
 func initGRPCServer(
